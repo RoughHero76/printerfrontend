@@ -4,6 +4,31 @@ function App() {
   const [device, setDevice] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
 
+  // Set Printer from Printer Mode to Vendor Mode In Printer's Setting
+
+  // We will have replace default printer driver to WinUSB with software called Zadig
+  // URL TO SOFTWARE https://sourceforge.net/projects/libwdi/
+
+  // Epson's vendor ID
+
+  //vendorId: 0x04B8
+  // We will have design something with raw commands of printer
+  //
+  // 
+  // const commands = [
+  //  '\x1B@',      // Initialize printer
+  //  '\x1B!1',     // Select font A
+  //  '\x1Ba\x01',  // Center alignment
+  //  `${helloWorld}\n`,
+  //  'Epson Printer Test\n',
+  //  '\x1Bd\x01',  // Feed 1 line
+  //  '\x1Bm',      // Partial cut
+  //  ];
+  //
+  //
+
+
+
   useEffect(() => {
     // Check if WebUSB is supported
     if (!navigator.usb) {
@@ -13,7 +38,7 @@ function App() {
 
   async function connect() {
     try {
-      const selectedDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x04B8 }] }); // Epson's vendor ID
+      const selectedDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x04B8 }] });
       await selectedDevice.open();
       await selectedDevice.selectConfiguration(1);
       await selectedDevice.claimInterface(0);
@@ -25,6 +50,8 @@ function App() {
     }
   }
 
+  let helloWorld = 'Hello Faijan';
+
   async function print() {
     if (!device) {
       console.error('No device selected');
@@ -34,13 +61,58 @@ function App() {
     // ESC/POS commands
     const textEncoder = new TextEncoder();
     const commands = [
-      '\x1B@',      // Initialize printer
-      '\x1B!1',     // Select font A
-      '\x1Ba\x01',  // Center alignment
-      'Hello, World!\n',
-      'Epson Printer Test\n',
-      '\x1Bd\x01',  // Feed 1 line
-      '\x1Bm',      // Partial cut
+      '\x1B@',     // Initialize printer
+      '\x1B!1',    // Select font A
+      '\x1Ba\x01', // Center alignment
+
+      // Header
+      '\x1B!0',    // Font A normal size
+      'Rofabs Hotels\n',
+      'Hitech City, Madhapur\n',
+      'Hyderabad, Telangana, 500081\n',
+      'Ph. +91 797673165\n',
+      'info@rofabsHotels.com\n\n',
+
+      '\x1B!1',    // Font A double height
+      'INVOICE\n\n',
+
+      '\x1B!0',    // Font A normal size
+      '\x1Ba\x00', // Left alignment
+
+      // Order Details
+      'Order ID: 12345\n',
+      'Property ID: PROP001\n',
+      'Type of Sale: Dine-in\n',
+      'Table Number: 7\n',
+      'Guests: 4\n\n',
+
+      // Products
+      '\x1B!1',    // Font A double height
+      'Products\n\n',
+
+      '\x1B!0',    // Font A normal size
+      'Product Name    Qty   Price   Total\n',
+      '--------------------------------\n',
+      'Chicken Biryani  2    250.00   500.00\n',
+      'Butter Naan      4     40.00   160.00\n',
+      'Paneer Tikka     1    180.00   180.00\n',
+      'Mango Lassi      2     60.00   120.00\n',
+      '--------------------------------\n\n',
+
+      // Summary
+      '\x1Ba\x02', // Right alignment
+      'Subtotal:   960.00\n',
+      'Tax (5%):    48.00\n',
+      '\x1B!1',    // Font A double height
+      'Total:    1008.00\n\n',
+
+      '\x1Ba\x01', // Center alignment
+      '\x1B!0',    // Font A normal size
+      'Thank you for dining with us!\n',
+      'Please visit again.\n\n',
+
+      '\x1Bd\x03', // Feed 3 lines
+      '\x1Bm'      // Partial cut
     ];
 
     try {
