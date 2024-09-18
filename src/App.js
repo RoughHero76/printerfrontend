@@ -62,55 +62,55 @@ function App() {
     const textEncoder = new TextEncoder();
     const commands = [
       '\x1B@',     // Initialize printer
-      '\x1B!1',    // Select font A
+      '\x1B!0',    // Select font A
+      '\x1D!\x01', // Set character size to smallest (width = 1, height = 1)
       '\x1Ba\x01', // Center alignment
-
+    
       // Header
-      '\x1B!0',    // Font A normal size
       'Rofabs Hotels\n',
       'Hitech City, Madhapur\n',
       'Hyderabad, Telangana, 500081\n',
       'Ph. +91 797673165\n',
       'info@rofabsHotels.com\n\n',
-
-      '\x1B!1',    // Font A double height
+    
+      '\x1D!\x11', // Set character size to double height, normal width
       'INVOICE\n\n',
-
-      '\x1B!0',    // Font A normal size
+    
+      '\x1D!\x00', // Reset character size to smallest
       '\x1Ba\x00', // Left alignment
-
+    
       // Order Details
       'Order ID: 12345\n',
       'Property ID: PROP001\n',
       'Type of Sale: Dine-in\n',
       'Table Number: 7\n',
       'Guests: 4\n\n',
-
+    
       // Products
-      '\x1B!1',    // Font A double height
+      '\x1D!\x11', // Set character size to double height, normal width
       'Products\n\n',
-
-      '\x1B!0',    // Font A normal size
-      'Product Name    Qty   Price   Total\n',
-      '--------------------------------\n',
-      'Chicken Biryani  2    250.00   500.00\n',
-      'Butter Naan      4     40.00   160.00\n',
-      'Paneer Tikka     1    180.00   180.00\n',
-      'Mango Lassi      2     60.00   120.00\n',
-      '--------------------------------\n\n',
-
+    
+      '\x1D!\x00', // Reset character size to smallest
+      'Product Name      Qty   Price   Total\n',
+      '------------------------------------\n',
+      'Chicken Biryani    2    250.00   500.00\n',
+      'Butter Naan        4     40.00   160.00\n',
+      'Paneer Tikka       1    180.00   180.00\n',
+      'Mango Lassi        2     60.00   120.00\n',
+      '------------------------------------\n\n',
+    
       // Summary
       '\x1Ba\x02', // Right alignment
       'Subtotal:   960.00\n',
       'Tax (5%):    48.00\n',
-      '\x1B!1',    // Font A double height
+      '\x1D!\x11', // Set character size to double height, normal width
       'Total:    1008.00\n\n',
-
+    
       '\x1Ba\x01', // Center alignment
-      '\x1B!0',    // Font A normal size
+      '\x1D!\x00', // Reset character size to smallest
       'Thank you for dining with us!\n',
       'Please visit again.\n\n',
-
+    
       '\x1Bd\x03', // Feed 3 lines
       '\x1Bm'      // Partial cut
     ];
