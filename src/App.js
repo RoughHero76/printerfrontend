@@ -129,41 +129,40 @@ function App() {
   const FS_W = `${FS}W`; // Turn quadruple-size mode on/off for Kanji characters
 
   // GS commands
-  const GS_EXCLAMATION = `${GS}!`; // Select character size
-  const GS_DOLLAR = `${GS}$`; // Set absolute vertical print position in Page mode
-  const GS_ASTERISK = `${GS}*`; // Define downloaded bit image
-  const GS_FORWARD_SLASH = `${GS}/`; // Print downloaded bit image
-  const GS_COLON = `${GS}:`; // Start/end macro definition
-  const GS_B = `${GS}B`; // Turn white/black reverse print mode on/off
-  const GS_H = `${GS}H`; // Select print position of HRI characters
-  const GS_I = `${GS}I`; // Transmit printer ID
-  const GS_L = `${GS}L`; // Set left margin
-  const GS_P = `${GS}P`; // Set horizontal and vertical motion units
-  const GS_T = `${GS}T`; // Set print position to the beginning of print line
-  const GS_V = `${GS}V`; // Select cut mode and cut paper
-  const GS_W = `${GS}W`; // Set print area width
-  const GS_BACKSLASH = `${GS}\\`; // Set relative vertical print position in Page mode
-  const GS_CARET = `${GS}^`; // Execute macro
-  const GS_a = `${GS}a`; // Enable/disable Automatic Status Back (ASB)
-  const GS_b = `${GS}b`; // Turn smoothing mode on/off
-  const GS_f = `${GS}f`; // Select font for HRI characters
-  const GS_h = `${GS}h`; // Set barcode height
-  const GS_k = `${GS}k`; // Print barcode
-  const GS_r = `${GS}r`; // Transmit status
-  const GS_v0 = `${GS}v0`; // Print raster bit image
-  const GS_w = `${GS}w`; // Set barcode width
+  const GS_EXCLAMATION = (n) => `${GS}!${String.fromCharCode(n)}`; // Select character size
+  const GS_DOLLAR = (nL, nH) => `${GS}$${String.fromCharCode(nL)}${String.fromCharCode(nH)}`; // Set absolute vertical print position in Page mode
+  const GS_ASTERISK = (x, y, d) => `${GS}*${String.fromCharCode(x)}${String.fromCharCode(y)}${d}`; // Define downloaded bit image
+  const GS_FORWARD_SLASH = (m) => `${GS}/${String.fromCharCode(m)}`; // Print downloaded bit image
+  const GS_COLON = () => `${GS}:`; // Start/end macro definition
+  const GS_B = (n) => `${GS}B${String.fromCharCode(n)}`; // Turn white/black reverse print mode on/off
+  const GS_H = (n) => `${GS}H${String.fromCharCode(n)}`; // Select print position of HRI characters
+  const GS_I = (n) => `${GS}I${String.fromCharCode(n)}`; // Transmit printer ID
+  const GS_L = (nL, nH) => `${GS}L${String.fromCharCode(nL)}${String.fromCharCode(nH)}`; // Set left margin
+  const GS_P = (x, y) => `${GS}P${String.fromCharCode(x)}${String.fromCharCode(y)}`; // Set horizontal and vertical motion units
+  const GS_T = (n) => `${GS}T${String.fromCharCode(n)}`; // Set print position to the beginning of print line
+  const GS_V = (m, n) => `${GS}V${String.fromCharCode(m)}${String.fromCharCode(n)}`; // Select cut mode and cut paper
+  const GS_W = (nL, nH) => `${GS}W${String.fromCharCode(nL)}${String.fromCharCode(nH)}`; // Set print area width
+  const GS_BACKSLASH = (nL, nH) => `${GS}\\${String.fromCharCode(nL)}${String.fromCharCode(nH)}`; // Set relative vertical print position in Page mode
+  const GS_CARET = (n, m) => `${GS}^${String.fromCharCode(n)}${String.fromCharCode(m)}`; // Execute macro
+  const GS_a = (n) => `${GS}a${String.fromCharCode(n)}`; // Enable/disable Automatic Status Back (ASB)
+  const GS_b = (n) => `${GS}b${String.fromCharCode(n)}`; // Turn smoothing mode on/off
+  const GS_f = (n) => `${GS}f${String.fromCharCode(n)}`; // Select font for HRI characters
+  const GS_h = (n) => `${GS}h${String.fromCharCode(n)}`; // Set barcode height
+  const GS_k = (m, ...args) => `${GS}k${String.fromCharCode(m)}${args.map(arg => String.fromCharCode(arg)).join('')}`; // Print barcode
+  const GS_r = (n) => `${GS}r${String.fromCharCode(n)}`; // Transmit status
+  const GS_v0 = (m, ...args) => `${GS}v0${String.fromCharCode(m)}${args.map(arg => String.fromCharCode(arg)).join('')}`; // Print raster bit image
+  const GS_w = (n) => `${GS}w${String.fromCharCode(n)}`; // Set barcode width
 
   // Usage example
   const ALIGN_LEFT = `${ESC}a${NUL}`;
   const ALIGN_CENTER = `${ESC}a${String.fromCharCode(1)}`;
   const ALIGN_RIGHT = `${ESC}a${String.fromCharCode(2)}`;
 
-  // Font size definitions
-  const FONT_SMALL = `${GS}!${String.fromCharCode(0)}`; // 1x1 (normal)
-  const FONT_MEDIUM = `${GS}!${String.fromCharCode(17)}`; // 2x2
-  const FONT_LARGE = `${GS}!${String.fromCharCode(34)}`; // 3x3
-  const FONT_EXTRA_LARGE = `${GS}!${String.fromCharCode(51)}`; // 4x4
-
+  // Usage example (update these as well)
+  const FONT_SMALL = GS_EXCLAMATION(0); // 1x1 (normal)
+  const FONT_MEDIUM = GS_EXCLAMATION(17); // 2x2
+  const FONT_LARGE = GS_EXCLAMATION(34); // 3x3
+  const FONT_EXTRA_LARGE = GS_EXCLAMATION(51); // 4x4
 
   async function print() {
     if (!device) {
@@ -174,9 +173,9 @@ function App() {
     const textEncoder = new TextEncoder();
     const commands = [
       ESC_AT, // Initialize printer (ESC @)
-      FONT_SMALL,
+      GS_EXCLAMATION(0), // FONT_SMALL
       ESC_2, // Select default line spacing (ESC 2)
-      ALIGN_CENTER,
+      ESC_a(1), // ALIGN_CENTER
 
       // Header
       'Rofabs Hotels\n',
@@ -185,11 +184,11 @@ function App() {
       'Ph. +91 797673165\n',
       'info@rofabsHotels.com\n\n',
 
-      FONT_MEDIUM,
+      GS_EXCLAMATION(17), // FONT_MEDIUM
       'INVOICE\n\n',
 
-      FONT_SMALL,
-      ALIGN_LEFT,
+      GS_EXCLAMATION(0), // FONT_SMALL
+      ESC_a(0), // ALIGN_LEFT
 
       // Order Details
       'Order ID: 12345\n',
@@ -199,10 +198,10 @@ function App() {
       'Guests: 4\n\n',
 
       // Products
-      FONT_MEDIUM,
+      GS_EXCLAMATION(17), // FONT_MEDIUM
       'Products\n\n',
 
-      FONT_SMALL,
+      GS_EXCLAMATION(0), // FONT_SMALL
       'Product Name      Qty   Price   Total\n',
       '------------------------------------\n',
       'Chicken Biryani    2    250.00   500.00\n',
@@ -212,18 +211,18 @@ function App() {
       '------------------------------------\n\n',
 
       // Summary
-      ALIGN_RIGHT,
+      ESC_a(2), // ALIGN_RIGHT
       'Subtotal:   960.00\n',
       'Tax (5%):    48.00\n',
-      FONT_MEDIUM,
+      GS_EXCLAMATION(17), // FONT_MEDIUM
       'Total:    1008.00\n\n',
 
-      ALIGN_CENTER,
-      FONT_SMALL,
+      ESC_a(1), // ALIGN_CENTER
+      GS_EXCLAMATION(0), // FONT_SMALL
       'Thank you for dining with us!\n',
       'Please visit again.\n\n',
 
-      `${ESC}d${String.fromCharCode(3)}`, // Feed 3 lines
+      ESC_d(3), // Feed 3 lines
       GS_V(66, 3) // Cut paper (GS V)
     ];
 
@@ -236,7 +235,6 @@ function App() {
       console.error('Error sending print data:', error);
     }
   }
-
 
 
   async function disconnect() {
